@@ -8,7 +8,6 @@ Source file for functions used in Main.py
 # Import libraries
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 from random import random, randint
 from numba import jit
 
@@ -52,10 +51,6 @@ class VenusMC (object):
         self.t_array = np.asarray([0])
         
         self.figsize = [7, 4]
-        self.scatter_alpha = 0.005
-        self.marker_size = 20
-        self.bins = [100, 100]
-        self.cmap = plt.cm.Spectral
         
 
     def initialize(self):
@@ -164,173 +159,78 @@ class VenusMC (object):
                 beta = self.beta_max * np.exp(-(t/self.n_stepiter)/self.tau)
                 t += 1
                 
-        print('Final residual: ', self.resid_array[-1])
-                
-               
-    """
+        """        
     def MCsimulation(self):
         self.initialize()
         t = 0
         beta = self.beta_max
         
         self.MCcooling()
-    """
-        
+           """     
             
-    def plot_tL(self, fig_name = ''):
+    def plot_tL(self):
         fig1 = plt.figure()
         ax1 = fig1.add_subplot(111)
         ax1.semilogy(self.t_array, self.L_array)
         #ax1.plot(self.t_array, self.L_array)
         plt.xlabel('Computation Step')
-        plt.ylabel('Angular momentum')
+        plt.ylabel('Angular Momentum')
         plt.show()
         
-    def plot_betaL(self, fig_name = ''):
+    def plot_betaL(self):
         fig1 = plt.figure()
         ax1 = fig1.add_subplot(111)
         ax1.loglog(self.beta_array, self.L_array)
         plt.xlabel('"Temperature" (beta)')
-        plt.ylabel('Angular momentum')
+        plt.ylabel('Angular Momentum')
         plt.show()
         
-    def plot_tresid(self, fig_name = ''):
+    def plot_tresid(self):
         fig1 = plt.figure(figsize = self.figsize)
         ax1 = fig1.add_subplot(111)
         #ax1.semilogy(self.t_array, self.resid_array)
         ax1.plot(self.t_array, self.resid_array)
         plt.xlabel('Computation Step')
-        plt.ylabel('Angular momentum residual')
-        if (fig_name != ''):
-            filename = '/Users/mattjones/Dropbox (Brown)/Classes/Computational Physics/Final Project/Images/' + fig_name
-            plt.savefig(filename, dpi = 300)
+        plt.ylabel('Angular Momentum Residual')
+        filename = '/Users/mattjones/Dropbox (Brown)/Classes/Computational Physics/Final Project/Images/t_vs_resid'
+        plt.savefig(filename, dpi = 300)
         plt.show()
         
-    def plot_betaresid(self, fig_name = ''):
+    def plot_betaresid(self):
         fig1 = plt.figure(figsize = self.figsize)
         ax1 = fig1.add_subplot(111)
         #ax1.loglog(self.beta_array, self.resid_array)
         ax1.semilogx(self.beta_array, self.resid_array)
         plt.xlabel('"Temperature" (beta)')
-        plt.ylabel('Angular momentum residual')
-        if (fig_name != ''):
-            filename = '/Users/mattjones/Dropbox (Brown)/Classes/Computational Physics/Final Project/Images/' + fig_name
-            plt.savefig(filename, dpi = 300)
+        plt.ylabel('Angular Momentum Residual')
+        filename = '/Users/mattjones/Dropbox (Brown)/Classes/Computational Physics/Final Project/Images/beta_vs_resid'
+        plt.savefig(filename, dpi = 300)
         plt.show()
         
-    def plot_tbeta(self, fig_name = ''):
-        fig1 = plt.figure(figsize = self.figsize)
+    def plot_tbeta(self):
+        fig1 = plt.figure()
         ax1 = fig1.add_subplot(111)
         ax1.semilogy(self.t_array, self.beta_array)
-        plt.xlabel('Computation step')
+        plt.xlabel('Computation Step')
         plt.ylabel('"Temperature" (beta)')
         plt.show()
         
     def plot_omegafreq(self):
-        fig1 = plt.figure(figsize = self.figsize)
+        fig1 = plt.figure()
         ax1 = fig1.add_subplot(111)
-        
         
     def plot_Ifreq(self):
         fig1 = plt.figure()
         ax1 = fig1.add_subplot(111)
         
     def plot_Mfreq(self):
-        fig1 = plt.figure(figsize = self.figsize)
+        fig1 = plt.figure()
         ax1 = fig1.add_subplot(111)
         
     def plot_thetafreq(self):
-        fig1 = plt.figure(figsize = self.figsize)
+        fig1 = plt.figure()
         ax1 = fig1.add_subplot(111)
         
     def plot_vfreq(self):
-        fig1 = plt.figure(figsize = self.figsize)
+        fig1 = plt.figure()
         ax1 = fig1.add_subplot(111)
-        
-    def plot_scatter(self, array1, array2, fig_name = ''):
-        fig1 = plt.figure(figsize = self.figsize)
-        ax1 = fig1.add_subplot(111)
-        counts, xedges, yedges, img = ax1.hist2d(array1, array2, bins = self.bins, cmap = self.cmap)
-        plt.colorbar(img, ax = ax1)
-        plt.xlim(array1.min(), array1.max())
-        plt.ylim(array1.min(), array1.max())
-        #plt.xlabel(xlbl)
-        #plt.ylabel(ylbl)
-        if (fig_name != ''):
-            filename = '/Users/mattjones/Dropbox (Brown)/Classes/Computational Physics/Final Project/Images/' + fig_name
-            plt.savefig(filename, dpi = 300)
-        plt.show()
-        
-    def plot_omegaL(self, fig_name = ''):
-        fig1 = plt.figure(figsize = self.figsize)
-        ax1 = fig1.add_subplot(111)
-        counts, xedges, yedges, img = ax1.hist2d(self.state_array[0, :], self.L_array, bins=self.bins, cmap=self.cmap)
-        plt.colorbar(img, ax=ax1)
-        plt.xlim(min(self.state_array[0, :]), max(self.state_array[0, :]))
-        plt.ylim(min(self.L_array), max(self.L_array))
-        #ax1.set_yscale('log')
-        plt.xlabel('Venus angular velocity')
-        plt.ylabel('Angular momentum')
-        if (fig_name != ''):
-            filename = '/Users/mattjones/Dropbox (Brown)/Classes/Computational Physics/Final Project/Images/' + fig_name
-            plt.savefig(filename, dpi = 300)
-        plt.show()
-        
-    def plot_ML(self, fig_name = ''):
-        fig1 = plt.figure(figsize = self.figsize)
-        ax1 = fig1.add_subplot(111)
-        counts, xedges, yedges, img = ax1.hist2d(self.state_array[1, :], self.L_array, bins=self.bins, cmap=self.cmap)
-        plt.colorbar(img, ax=ax1)
-        #sns.kdeplot(self.state_array[1, :], self.L_array, cmap="Reds", shade=True, bw=0.15)
-        plt.xlim(min(self.state_array[1, :]), max(self.state_array[1, :]))
-        plt.ylim(min(self.L_array), max(self.L_array))
-        plt.xlabel('Impactor mass')
-        plt.ylabel('Angular momentum')
-        if (fig_name != ''):
-            filename = '/Users/mattjones/Dropbox (Brown)/Classes/Computational Physics/Final Project/Images/' + fig_name
-            plt.savefig(filename, dpi = 300)
-        plt.show()
-        
-    def plot_RL(self, fig_name = ''):
-        fig1 = plt.figure(figsize = self.figsize)
-        ax1 = fig1.add_subplot(111)
-        #ax1.scatter(self.state_array[2, :], self.L_array, s=self.marker_size, alpha=self.scatter_alpha)
-        #ax1.contour(self.state_array[2, :], self.L_array)
-        counts, xedges, yedges, img = ax1.hist2d(self.state_array[2, :], self.L_array, bins=self.bins, cmap=self.cmap)
-        plt.colorbar(img, ax=ax1)
-        plt.xlim(min(self.state_array[2, :]), max(self.state_array[2, :]))
-        plt.ylim(min(self.L_array), max(self.L_array))
-        plt.xlabel('Impactor distance (R)')
-        plt.ylabel('Angular momentum')
-        if (fig_name != ''):
-            filename = '/Users/mattjones/Dropbox (Brown)/Classes/Computational Physics/Final Project/Images/' + fig_name
-            plt.savefig(filename, dpi = 300)
-        plt.show()
-        
-    def plot_vL(self, fig_name = ''):
-        fig1 = plt.figure(figsize = self.figsize)
-        ax1 = fig1.add_subplot(111)
-        counts, xedges, yedges, img = ax1.hist2d(self.state_array[3, :], self.L_array, bins=self.bins, cmap=self.cmap)
-        plt.colorbar(img, ax=ax1)
-        plt.xlim(min(self.state_array[3, :]), max(self.state_array[3, :]))
-        plt.ylim(min(self.L_array), max(self.L_array))
-        plt.xlabel('Impactor velocity')
-        plt.ylabel('Angular momentum')
-        if (fig_name != ''):
-            filename = '/Users/mattjones/Dropbox (Brown)/Classes/Computational Physics/Final Project/Images/' + fig_name
-            plt.savefig(filename, dpi = 300)
-        plt.show()
-        
-    def plot_Mv(self, fig_name = ''):
-        fig1 = plt.figure(figsize = self.figsize)
-        ax1 = fig1.add_subplot(111)
-        counts, xedges, yedges, img = ax1.hist2d(self.state_array[1, :], self.state_array[3, :], bins=self.bins, cmap=self.cmap)
-        plt.colorbar(img, ax=ax1)
-        plt.xlim(min(self.state_array[1, :]), max(self.state_array[1, :]))
-        plt.ylim(min(self.state_array[3, :]), max(self.state_array[3, :]))
-        plt.xlabel('Impactor mass')
-        plt.ylabel('Impactor velocity')
-        if (fig_name != ''):
-            filename = '/Users/mattjones/Dropbox (Brown)/Classes/Computational Physics/Final Project/Images/' + fig_name
-            plt.savefig(filename, dpi = 300)
-        plt.show()

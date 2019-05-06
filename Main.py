@@ -14,9 +14,9 @@ import functions as MC
 # Set up parameters
 beta_max = 1e-3
 beta_min = 1e-10
-tau = 5e4
+tau = 7e4
 n_cooliter = 1e7
-n_stepiter = 5
+n_stepiter = 1
 
 n_cooling_runs = 5
 
@@ -37,7 +37,7 @@ print('Final residual: ', MCV.resid_array[-1])
 
 # Analyze results
 """
-timestamp = len(MCV.t_array) - round(len(MCV.t_array) * 1)
+timestamp = len(MCV.t_array) - round(len(MCV.t_array) * 0.5)
 MCV.state_array = MCV.state_array[:, timestamp:]
 MCV.t_array = MCV.t_array[timestamp:]
 MCV.beta_array = MCV.beta_array[timestamp:]
@@ -50,11 +50,16 @@ MCV.plot_tresid()
 MCV.plot_betaresid()
 MCV.plot_tbeta()
 
-MCV.plot_omegaL()
-MCV.plot_ML()
-MCV.plot_RL()
-MCV.plot_vL()
-MCV.plot_Mv()
+MCV.plot_prob(MCV.state_array[0, :], 'Venus initial angular velocity')
+MCV.plot_prob(MCV.state_array[1, :], 'Impactor mass')
+MCV.plot_prob(MCV.state_array[2, :], 'Impactor velocity')
+MCV.plot_prob(MCV.state_array[3, :], 'Impactor mass')
+
+MCV.plot_hist2d(MCV.state_array[0, :], MCV.L_array, 'Venus initial angular velocity', 'Angular momentum')
+MCV.plot_hist2d(MCV.state_array[1, :], MCV.L_array, 'Impactor mass (M_V)', 'Angular momentum')
+MCV.plot_hist2d(MCV.state_array[2, :], MCV.L_array, 'Impact angle (sort of)', 'Angular momentum')
+MCV.plot_hist2d(MCV.state_array[3, :], MCV.L_array, 'Impactor velocity', 'Angular momentum')
+MCV.plot_hist2d(MCV.state_array[1, :], MCV.state_array[3, :], 'Impactor mass', 'Impactor velocity')
 
 
 """

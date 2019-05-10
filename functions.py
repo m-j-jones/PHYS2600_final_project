@@ -9,18 +9,6 @@ Source file for functions used in Main.py
 import numpy as np
 import matplotlib.pyplot as plt
 from random import random, randint
-from numba import jit
-
-# Function definitions
-@jit(nopython = True)
-def MCroutine_jit(state0, beta):
-    """
-    Full MC routine that iteratively runs the MCstep
-    """
-    
-    
-    
-    return
 
 
 class VenusMC (object):
@@ -59,19 +47,13 @@ class VenusMC (object):
         """
         
         omega_max = 2.18166e-4 #8 hrs/rotation
-        #M_mean = 1.791e18
-        #M_var = M_mean
         M_a = 4 #power law constant for mass distribution
-        #v_max = 20000
         v_mean = 27000
         v_var = 4000
         
         state0 = np.empty((4, 1))
         state0[0, 0] = random() * omega_max #Venus pre-impact angular velocity -- 0 - +8hrs/rotation
-        #state0[1, 0] = np.random.lognormal(M_mean/self.M, M_var/self.M) #testing with normal distribution about r=50km impactor with Vesta density
-        #state0[1, 0] = (1 - np.random.power(M_a)) * 0.1
-        state0[1, 0] = (random() * 0.4) + 0.1
-            #normalized to mass of Venus
+        state0[1, 0] = (1 - np.random.power(M_a)) * 0.1 #impactor mass normalized to mass of Venus
         state0[2, 0] = random() #normalized sin(theta) of impact -- 0-R_Venus / R_Venus i.e. 0-1
         state0[3, 0] = np.random.normal(v_mean/self.R, v_var/self.R) #velocity of impactor
         
@@ -90,10 +72,7 @@ class VenusMC (object):
         """
         
         omega_max = 2.18166e-4
-        #M_mean = 1.791e18
-        #M_var = M_mean
         M_a  = 4
-        #v_max = 20000
         v_mean = 27000
         v_var = 4000
         
@@ -105,9 +84,7 @@ class VenusMC (object):
         if choice == 0:
             new_state[0, 0] = random() * omega_max
         elif choice == 1:
-            #new_state[1, 0] = np.random.normal(M_mean/self.M, M_var/self.M)
-            #new_state[1, 0] = (1 - np.random.power(M_a)) * 0.1
-            new_state[1, 0] = (random() * 0.4) + 0.1
+            new_state[1, 0] = (1 - np.random.power(M_a)) * 0.1
         elif choice == 2:
             new_state[2, 0] = random()
         elif choice == 3:
@@ -118,8 +95,7 @@ class VenusMC (object):
         resid_new = np.abs(self.Lnormal - Lnew)
         
         dL = resid_new - resid
-        prob = 1 - np.exp(-0.0025/beta)
-        #print("Condition: ", prob, "beta: ", beta)
+        prob = 1 - np.exp(-dL/beta)
         if (dL <= 0) or (random() > prob):
             state = new_state
             L = Lnew
@@ -160,26 +136,18 @@ class VenusMC (object):
                 t += 1
                 
         print('Final residual: ', self.resid_array[-1])
-                
-               
-    """
-    def MCsimulation(self):
-        self.initialize()
-        t = 0
-        beta = self.beta_max
-        
-        self.MCcooling()
-    """
         
             
     def plot_tL(self, fig_name = ''):
         fig1 = plt.figure()
         ax1 = fig1.add_subplot(111)
         ax1.set_facecolor([.97, .97, .9])
-        ax1.semilogy(self.t_array, self.L_array)
-        #ax1.plot(self.t_array, self.L_array)
+        ax1.plot(self.t_array, self.L_array)
         plt.xlabel('Computation Step')
         plt.ylabel('Angular momentum')
+        if (fig_name != ''):
+            filename = '/Users/mattjones/Dropbox (Brown)/Classes/Computational Physics/Final Project/Images/' + fig_name
+            plt.savefig(filename, dpi = 300)
         plt.show()
         
     def plot_betaL(self, fig_name = ''):
@@ -189,14 +157,17 @@ class VenusMC (object):
         ax1.loglog(self.beta_array, self.L_array)
         plt.xlabel('"Temperature" (beta)')
         plt.ylabel('Angular momentum')
+        if (fig_name != ''):
+            filename = '/Users/mattjones/Dropbox (Brown)/Classes/Computational Physics/Final Project/Images/' + fig_name
+            plt.savefig(filename, dpi = 300)
         plt.show()
         
     def plot_tresid(self, fig_name = ''):
         fig1 = plt.figure(figsize = self.figsize)
         ax1 = fig1.add_subplot(111)
         ax1.set_facecolor([.97, .97, .9])
-        #ax1.semilogy(self.t_array, self.resid_array)
         ax1.plot(self.t_array, self.resid_array, color = [.7, .3, .2])
+        ax1.set_yscale('log')
         plt.xlabel('Computation Step')
         plt.ylabel('Angular momentum residual')
         if (fig_name != ''):
@@ -208,8 +179,8 @@ class VenusMC (object):
         fig1 = plt.figure(figsize = self.figsize)
         ax1 = fig1.add_subplot(111)
         ax1.set_facecolor([.97, .97, .9])
-        #ax1.loglog(self.beta_array, self.resid_array)
         ax1.semilogx(self.beta_array, self.resid_array, color = [.7, .3, .2])
+        ax1.set_yscale('log')
         plt.xlabel('"Temperature" (beta)')
         plt.ylabel('Angular momentum residual')
         if (fig_name != ''):
@@ -224,6 +195,9 @@ class VenusMC (object):
         ax1.semilogy(self.t_array, self.beta_array, color = [.7, .3, .2])
         plt.xlabel('Computation step')
         plt.ylabel('"Temperature" (beta)')
+        if (fig_name != ''):
+            filename = '/Users/mattjones/Dropbox (Brown)/Classes/Computational Physics/Final Project/Images/' + fig_name
+            plt.savefig(filename, dpi = 300)
         plt.show()
         
     
@@ -233,6 +207,10 @@ class VenusMC (object):
         ax1.set_facecolor([.97, .97, .9])
         ax1.hist(array, bins = 100, density = True, color = [.7, .3, .2])
         plt.title(plotttl)
+        if (fig_name != ''):
+            filename = '/Users/mattjones/Dropbox (Brown)/Classes/Computational Physics/Final Project/Images/' + fig_name
+            plt.savefig(filename, dpi = 300)
+        plt.show()
         
         
         
@@ -255,14 +233,27 @@ class VenusMC (object):
         
         counts, xedges, yedges, img = ax1.hist2d(array1, array2, bins = [binsx, binsy], cmap = plt.cm.Spectral)
         plt.colorbar(img, ax = ax1)
-        #ax1.set_facecolor([.97, .97, .97])
-        #ax1.scatter(array1, array2, alpha = 0.01, s = 20, color = [.7, .3, .2])
         plt.xlim(array1.min(), array1.max())
         plt.ylim(array2.min(), array2.max())
         if use_logx:
             ax1.set_xscale('log')
         if use_logy:
             ax1.set_yscale('log')
+        plt.xlabel(xlbl)
+        plt.ylabel(ylbl)
+        if (fig_name != ''):
+            filename = '/Users/mattjones/Dropbox (Brown)/Classes/Computational Physics/Final Project/Images/' + fig_name
+            plt.savefig(filename, dpi = 300)
+        plt.show()
+        
+    
+    def plot_scatter(self, array1, array2, xlbl = '', ylbl = '', fig_name = ''):
+        fig1 = plt.figure(figsize = self.figsize)
+        ax1 = fig1.add_subplot(111)
+        ax1.set_facecolor([.97, .97, .9])
+        ax1.scatter(array1, array2, alpha = 0.01, s = 20, color = [.7, .3, .2])
+        plt.xlim(array1.min(), array1.max())
+        plt.ylim(array2.min(), array2.max())
         plt.xlabel(xlbl)
         plt.ylabel(ylbl)
         if (fig_name != ''):
